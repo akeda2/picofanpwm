@@ -42,6 +42,6 @@ while True:
     fan.duty_u16(int(data*65535/100))
     utime.sleep(5)
     led.duty_u16(0)
-    utime.sleep(1)
+#    utime.sleep(1)
     gc.collect()
     

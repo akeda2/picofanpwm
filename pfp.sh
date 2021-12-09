@@ -54,10 +54,10 @@ while true; do
 if [ -z $MANUAL ]; then
 	if [ ! -z $TARGET ]; then
 		if [ $mytemp -gt $TARGET ]; then
-			PWM=$(($PWM + 2))
+			PWM=$(($TARGET - ($mytemp - $TARGET) + (($mytemp - $lasttemp)*4)))
 			UPDOWN=" UP "
 		elif [ $mytemp -lt $TARGET ]; then
-			PWM=$(($PWM - 2))
+			PWM=$(($TARGET - ($TARGET - $mytemp) - (($lasttemp - $mytemp) / 4)))
 			UPDOWN="DOWN"
 		else
 			UPDOWN="----"
@@ -69,8 +69,6 @@ if [ -z $MANUAL ]; then
 		elif [ $mytemp -ge 65 ]; then
 			#PWM=$((PWM + 5))
 			PWM=80
-		elif [ $PWM -lt 21 ]; then
-			PWM=20
 		elif [ $mytemp -gt $lasttemp ]; then
 			PWM=$((PWM + 2))
 			UPDOWN=" UP "
@@ -88,6 +86,11 @@ else
 fi
 	# Call the setpwm function
 	#
+	if [ $PWM -lt 31 ]; then
+    		PWM=30
+	elif [ $PWM -ge 100 ]; then
+		PWM=100
+	fi
 	setpwm $PWM
 	# If in debug mode, print to stdout. >/>> to redirect to logfile, use gnuplot file to view stats.
 	#
