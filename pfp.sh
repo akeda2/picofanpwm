@@ -29,7 +29,7 @@ while true; do
 	elif [ $mytemp -gt $lasttemp ]; then
 		PWM=$((PWM + 1))
 	elif [ $mytemp -lt $lasttemp ]; then
-		PWM=$((PWM -1))
+		PWM=$((PWM -2))
 	else
 		#PWM=$((PWM - 1))
 		PWM=$PWM
