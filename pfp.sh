@@ -1,3 +1,41 @@
 #!/bin/bash
 
-[ ! -z "$1" ] && echo "$1" > /dev/ttyACM0 || echo "No value added!"
+[ ! -z "$1" ] && echo "$1" > /dev/ttyACM0 && exit 0
+
+PWM=60
+
+setpwm (){
+	[ -z $1 ] && mypwm=60 || mypwm=$1
+	[ $1 -le 20 ] && mypwm=20
+	echo $mypwm > /dev/ttyACM0
+}
+
+readtemp (){
+	GPUTEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader)
+	echo $GPUTEMP
+}
+
+setpwm 60
+lasttemp=50
+while true; do
+	mytemp=$(readtemp)
+	if [ $mytemp -gt 75 ]; then
+		PWM=100
+	elif [ $mytemp -ge 65 ]; then
+		#PWM=$((PWM + 5))
+		PWM=80
+	elif [ $PWM -lt 21 ]; then
+		PWM=20
+	elif [ $mytemp -gt $lasttemp ]; then
+		PWM=$((PWM + 1))
+	elif [ $mytemp -lt $lasttemp ]; then
+		PWM=$((PWM -1))
+	else
+		#PWM=$((PWM - 1))
+		PWM=$PWM
+	fi
+	setpwm $PWM
+	echo "$mytemp  $PWM"
+	lasttemp=$mytemp
+	sleep 2
+done
