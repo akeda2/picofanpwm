@@ -1,7 +1,12 @@
 #!/bin/bash
 
-[ ! -z "$1" ] && echo "$1" > /dev/ttyACM0 && exit 0
-
+if [ ! -z "$1" ]; then
+	if [ "$1" == "debug" ]; then
+		DEBUG=1
+	else
+		echo "$1" > /dev/ttyACM0 && exit 0
+	fi
+fi
 PWM=60
 
 setpwm (){
@@ -38,7 +43,7 @@ while true; do
 		UPDOWN="----"
 	fi
 	setpwm $PWM
-	echo "$UPDOWN Temp: $lasttemp $mytemp  PWM: $PWM"
+	[ ! -z $DEBUG ] && echo "$UPDOWN Temp: $lasttemp $mytemp  PWM: $PWM"
 	lasttemp=$mytemp
 	sleep 2
 done
