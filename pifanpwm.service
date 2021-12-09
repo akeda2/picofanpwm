@@ -1,0 +1,14 @@
+[Unit]
+Description=picofanpwm service
+After=syslog.target
+
+[Service]
+User=root
+ExecStart=/bin/bash /usr/local/bin/pfp
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=picofanpwm
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
