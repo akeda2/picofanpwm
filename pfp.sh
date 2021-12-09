@@ -28,14 +28,17 @@ while true; do
 		PWM=20
 	elif [ $mytemp -gt $lasttemp ]; then
 		PWM=$((PWM + 1))
+		UPDOWN=" UP "
 	elif [ $mytemp -lt $lasttemp ]; then
 		PWM=$((PWM -2))
+		UPDOWN="DOWN"
 	else
 		#PWM=$((PWM - 1))
 		PWM=$PWM
+		UPDOWN="----"
 	fi
 	setpwm $PWM
-	echo "$mytemp  $PWM"
+	echo "$UPDOWN Temp: $lasttemp $mytemp  PWM: $PWM"
 	lasttemp=$mytemp
 	sleep 2
 done
