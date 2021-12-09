@@ -27,6 +27,7 @@ if [ ! -z "$1" ]; then
 			PWM="$1"
 			MANUAL=1
 		elif [ ! -z $SERVICE ]; then
+			echo "(re)starting picofanpwm service with static value: $1"
 			while true; do
 				echo "$1" > /dev/ttyACM0
 				sleep 60
