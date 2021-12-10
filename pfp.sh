@@ -1,10 +1,17 @@
 #!/bin/bash
 #
 # picofanpwm - control PWM fans with a RPi Pico
-# (c) David Åkesso, 2021
+# (c) David Åkesson, 2021
 
 # Default PWM value
 PWM=60
+
+# Test
+TEMP_MIN=35
+TEMP_MAX=70
+PWM_MAX=100
+PWM_MIN=30
+
 
 # Debug mode?
 # pfp debug ...
@@ -17,7 +24,16 @@ PWM=60
 # pfp nn
 # If debug is given, the program will run the main loop for debugging without changing PWM.
 #
-
+setpwm (){
+        [ -z $1 ] && mypwm=60 || mypwm=$1
+        [ $1 -le 20 ] && mypwm=20
+        TTY="/dev/ttyACM"
+        if [ -c "$TTY"0 ]; then
+                echo $mypwm > "$TTY"0
+        else
+                echo $mypwm > "$TTY"1
+        fi
+}
 
 if [ ! -z "$1" ]; then
 	if [ "$1" == "target" ]; then
@@ -29,19 +45,17 @@ if [ ! -z "$1" ]; then
 		elif [ ! -z $SERVICE ]; then
 			echo "(re)starting picofanpwm service with static value: $1"
 			while true; do
-				echo "$1" > /dev/ttyACM0
-				sleep 60
+				setpwm $1
+				#echo "$1" > /dev/ttyACM0
+				sleep 8
 			done
 		else
-			echo "$1" > /dev/ttyACM0 && exit 0
+			echo "Sending $1 to ttyACM0"
+			setpwm $1 && exit 0
+			#echo "$1" > /dev/ttyACM0 && exit 0
 		fi
 	fi
 fi
-setpwm (){
-	[ -z $1 ] && mypwm=60 || mypwm=$1
-	[ $1 -le 20 ] && mypwm=20
-	echo $mypwm > /dev/ttyACM0
-}
 
 # Read GPU-temp from an Nvidia GPU:
 # (this is my use-case)
@@ -62,13 +76,16 @@ while true; do
 if [ -z $MANUAL ]; then
 	if [ ! -z $TARGET ]; then
 		if [ $mytemp -gt $TARGET ]; then
-			PWM=$(($TARGET - ($mytemp - $TARGET) + (($mytemp - $lasttemp)*4)))
+			step=$(((PWM_MAX - PWM_MIN) / (TEMP_MAX - TEMP_MIN)))
+			thistemp=$(($myutemp - $TEMP_MIN))
+			PWM=$((PWM_MIN + ($thistemp * $step)))
+			#PWM=$(($TARGET - ($mytemp - $TARGET) + (($mytemp - $lasttemp)*4)))
 			#echo "PWM=(TARGET:$TARGET - (mytemp:$mytemp - TARGET:$TARGET) + ((mytemp:$mytemp - lasttemp:$lasttemp)*4 : PWM=$PWM"
 			UPDOWN=" UP "
-		elif [ $mytemp -lt $TARGET ]; then
-			PWM=$(($TARGET - ($TARGET - $mytemp) - (($lasttemp - $mytemp) / 4)))
+		#elif [ $mytemp -lt $TARGET ]; then
+		#	PWM=$(($TARGET - ($TARGET - $mytemp) - (($lasttemp - $mytemp) / 4)))
                         #echo "PWM=(TARGET:$TARGET - (TARGET:$TARGET - mytemp:$mytemp) - ((lasttemp:$lasttemp - mytemp:$mytemp)) /4) : PWM=$PWM"
-			UPDOWN="DOWN"
+		#	UPDOWN="DOWN"
 		else
 			UPDOWN="----"
 			PWM=$PWM
