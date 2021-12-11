@@ -57,6 +57,12 @@ class Sender:
     def close(self):
         self.serial.close() 
 
+# Get data from device
+def getData():
+    get = Sender()
+    received = get.receive()
+    get.close()
+    print(str(received))
 
 # Set fan speed
 def setFanSpeed(temperature):
@@ -113,19 +119,8 @@ def resetFan():
 #    GPIO.cleanup() # resets all GPIO ports used by this function
 
 try:
-    # Setup GPIO pin
-#    GPIO.setwarnings(False)
-#    GPIO.setmode(GPIO.BCM)
-#    GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
-#    fan = GPIO.PWM(FAN_PIN,PWM_FREQ)
-    # setFanSpeed(FAN_OFF)
-    # Handle fan speed every WAIT_TIME sec
-    while True:
-        temp = float(getCpuTemperature())
-        outside_dead_band_higher = handleDeadZone(temp)
-        setFanSpeed(temp)
-        #handleFanSpeed(temp, outside_dead_band_higher)
-        time.sleep(WAIT_TIME)
+    getData()
+    #time.sleep(WAIT_TIME)
 
 
 except KeyboardInterrupt:
