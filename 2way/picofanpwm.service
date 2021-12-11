@@ -1,0 +1,17 @@
+[Unit]
+Description=picofanpwm service
+After=syslog.target
+StartLimitInterval=0
+
+[Service]
+User=root
+#ExecStart=/bin/bash /usr/local/bin/pfp service 66
+ExecStart=/usr/bin/python3 /usr/local/bin/tempsend.py
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=picofanpwm
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
