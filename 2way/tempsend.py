@@ -33,7 +33,7 @@ def getCpuTemperature():
     #res = os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline()
     res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
     temp = float(res)/1
-    print("temp is {0}".format(temp)) # Uncomment for testing
+#    print("temp is {0}".format(temp)) # Uncomment for testing
     return temp
 
 class Sender:
@@ -63,19 +63,9 @@ def setFanSpeed(temperature):
     setFanSpee(int(temperature+10000))
 
 def setFanSpee(speed):
-#    fan.start(speed)
-    #a = 'echo "' + str(int(speed)) + '" > /dev/ttyACM0'
-    #a = '%s %s%s%s %s %s %s%s%s %s %s' % ('[ -c /dev/ttyACM0 ] && echo', '"', str(int(speed)), '"', '>', '/dev/ttyACM0 ; [ -c /dev/ttyACM1 ] && echo', '"', str(int(speed)), '"', '>', '/dev/ttyACM1')
-    #os.popen(a)
-#'echo "speed" > /dev/ttyACM0')
-#    print(a)
-    print(str(speed))
     trans = Sender()
     trans.send(str(int(speed)))
     trans.close()
-
-#    proc = subprocess.Popen(a, shell=True, stdin=subprocess.PIPE, bufsize=-1)
-#    print(proc.communicate())
     return()
 
 # Handle fan speed
@@ -113,13 +103,6 @@ def resetFan():
 #    GPIO.cleanup() # resets all GPIO ports used by this function
 
 try:
-    # Setup GPIO pin
-#    GPIO.setwarnings(False)
-#    GPIO.setmode(GPIO.BCM)
-#    GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
-#    fan = GPIO.PWM(FAN_PIN,PWM_FREQ)
-    # setFanSpeed(FAN_OFF)
-    # Handle fan speed every WAIT_TIME sec
     while True:
         temp = float(getCpuTemperature())
         outside_dead_band_higher = handleDeadZone(temp)
@@ -130,12 +113,5 @@ try:
 
 except KeyboardInterrupt:
  # trap a CTRL+C keyboard interrupt
-#    try:
     resetFan()
-#        trans.close()
-    #except KeyboardInterrupt:
-        #resetFan()
-
-    #resetFan()
-
 atexit.register(resetFan)

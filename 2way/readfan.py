@@ -29,8 +29,6 @@ outside_dead_band_higher = True
 
 # Get CPU's temperature
 def getCpuTemperature():
-    #res = 60
-    #res = os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline()
     res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
     temp = float(res)/1
     print("temp is {0}".format(temp)) # Uncomment for testing
@@ -64,24 +62,16 @@ def getData():
     get.close()
     print(str(received))
 
-# Set fan speed
+# Send temperature instead of pwm duty
 def setFanSpeed(temperature):
     setFanSpee(int(temperature+10000))
 
+# Send temperature
 def setFanSpee(speed):
-#    fan.start(speed)
-    #a = 'echo "' + str(int(speed)) + '" > /dev/ttyACM0'
-    #a = '%s %s%s%s %s %s %s%s%s %s %s' % ('[ -c /dev/ttyACM0 ] && echo', '"', str(int(speed)), '"', '>', '/dev/ttyACM0 ; [ -c /dev/ttyACM1 ] && echo', '"', str(int(speed)), '"', '>', '/dev/ttyACM1')
-    #os.popen(a)
-#'echo "speed" > /dev/ttyACM0')
-#    print(a)
     print(str(speed))
     trans = Sender()
     trans.send(str(int(speed)))
     trans.close()
-
-#    proc = subprocess.Popen(a, shell=True, stdin=subprocess.PIPE, bufsize=-1)
-#    print(proc.communicate())
     return()
 
 # Handle fan speed
@@ -116,21 +106,12 @@ def handleDeadZone(temperature):
 # Reset fan to 100% by cleaning GPIO ports
 def resetFan():
     setFanSpeed(66)
-#    GPIO.cleanup() # resets all GPIO ports used by this function
 
 try:
     getData()
-    #time.sleep(WAIT_TIME)
-
 
 except KeyboardInterrupt:
  # trap a CTRL+C keyboard interrupt
-#    try:
     resetFan()
-#        trans.close()
-    #except KeyboardInterrupt:
-        #resetFan()
-
-    #resetFan()
 
 atexit.register(resetFan)
