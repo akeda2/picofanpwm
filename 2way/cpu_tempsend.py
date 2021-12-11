@@ -32,7 +32,7 @@ def getCpuTemperature():
     #res = 60
     #res = os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline()
 #    res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
-    with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
+    with open(r"/sys/class/thermal/thermal_zone3/temp") as File:
         res = File.readline()
     temp = float(res) / 1000
     print(str(int(res)))
