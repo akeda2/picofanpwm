@@ -8,20 +8,20 @@ from machine import Pin, Timer, PWM
 
 gc.enable()
 
-fan = PWM(Pin(12))
-#fan = PWM(Pin(7))
-fan.freq(25000)
-
-board = "pico"
-#board = tiny
+#board = "pico"
+board = "tiny"
 
 # For regular RPi-pico
 if board == "pico":
+    fan = PWM(Pin(12))
+    
     led = PWM(Pin(25))
     led.freq(1000)
 
 # For tiny2040
 if board == "tiny":
+    fan = PWM(Pin(7))
+    
     red = PWM(Pin(18))
     red.freq(1000)
     green = PWM(Pin(19))
@@ -30,6 +30,7 @@ if board == "tiny":
     blue = PWM(Pin(20))
     blue.freq(1000)
 
+fan.freq(25000)
 data = 66
 rawdata = 0
 counter = 8
