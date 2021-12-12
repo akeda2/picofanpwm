@@ -62,6 +62,16 @@ def getData():
     get.close()
     print(str(received))
 
+#def sendData(data):
+#    setFanSpee(int(data+20000))
+
+def pingPong():
+    ping = Sender()
+    ping.send(str(20000))
+    pong = ping.receive()
+    ping.close()
+    print(str(pong))
+
 # Send temperature instead of pwm duty
 def setFanSpeed(temperature):
     setFanSpee(int(temperature+10000))
@@ -108,10 +118,11 @@ def resetFan():
     setFanSpeed(66)
 
 try:
-    getData()
+    #getData()
+    pingPong()
 
 except KeyboardInterrupt:
  # trap a CTRL+C keyboard interrupt
-    resetFan()
+    #resetFan()
 
-atexit.register(resetFan)
+#atexit.register(resetFan)

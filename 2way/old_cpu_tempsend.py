@@ -10,9 +10,6 @@ import subprocess
 import io
 import serial
 
-# Default value, change with command line [gpu|cpu]
-SOURCE = "gpu"
-
 # Configuration
 #FAN_PIN = 14            # BCM pin used to drive PWM fan
 WAIT_TIME = 2           # [s] Time to wait between each refresh
@@ -32,21 +29,14 @@ outside_dead_band_higher = True
 
 # Get CPU's temperature
 def getCpuTemperature():
+    #res = 60
+    #res = os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline()
+#    res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
     with open(r"/sys/class/thermal/thermal_zone3/temp") as File:
         res = File.readline()
     temp = float(res) / 1000
     print(str(int(res)))
 #    temp = float(res)/1
-#    print("temp is {0}".format(temp)) # Uncomment for testing
-    return temp
-
-
-# Get GPU's temperature
-def getGpuTemperature():
-    #res = 60
-    #res = os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline()
-    res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
-    temp = float(res)/1
 #    print("temp is {0}".format(temp)) # Uncomment for testing
     return temp
 
@@ -61,32 +51,26 @@ class Sender:
         else:
             exDevice = device + '1'
 
-        self.serial = serial.Serial(exDevice, baud, timeout=timeout, write_timeout=2)
+        try:
+            self.serial = serial.Serial(exDevice, baud, timeout=timeout)
+        except:
+            print("fail")
     def receive(self) -> str:
         line = self.serial.read_until(self.TERMINATOR)
         return line.decode('UTF8').strip()
     def send(self, text: str) -> bool:
         line = '%s\r\f' % text
-        try:
-            self.serial.write(line.encode('UTF8'))
-        except:
-            print("send FAIL!")
-            raise
+        self.serial.write(line.encode('UTF8'))
     def close(self):
         self.serial.close() 
 
 
 # Set fan speed
 def setFanSpeed(temperature):
-    try:
-        setFanSpee(int(temperature+10000))
-    except:
-        raise
+    setFanSpee(int(temperature+10000))
+
 def setFanSpee(speed):
-    try:
-        trans = Sender()
-    except:
-        raise
+    trans = Sender()
     trans.send(str(int(speed)))
     trans.close()
     return()
@@ -94,22 +78,12 @@ def setFanSpee(speed):
 # Reset fan
 def resetFan():
     setFanSpeed(66)
+#    GPIO.cleanup() # resets all GPIO ports used by this function
 
-
-if len(sys.argv) > 1:
-    SOURCE = sys.argv[1]
-        
 try:
     while True:
-        if SOURCE == "gpu":
-            temp = float(getGpuTemperature())
-        else:
-            temp = float(getCpuTemperature())
-        try:
-            setFanSpeed(temp)
-        except:
-            print("EPIC FAIL!")
-            pass
+        temp = float(getCpuTemperature())
+        setFanSpeed(temp)
         #handleFanSpeed(temp, outside_dead_band_higher)
         time.sleep(WAIT_TIME)
 
