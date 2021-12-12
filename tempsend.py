@@ -129,7 +129,7 @@ try:
             print(int(SOURCE))
             break
         else:
-            temp = float(getCpuTemperature())
+            temp = float(getGpuTemperature())
 
         try:
             setFanSpeed(temp)
