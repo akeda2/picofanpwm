@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-#import RPi.GPIO as GPIO
 import time
 import signal
 import sys
@@ -14,7 +12,6 @@ import serial
 SOURCE = "gpu"
 
 # Configuration
-#FAN_PIN = 14            # BCM pin used to drive PWM fan
 WAIT_TIME = 2           # [s] Time to wait between each refresh
 PWM_FREQ = 25           # [kHz] 25kHz for Noctua PWM control
 
@@ -104,7 +101,7 @@ def pingPong():
 
 # Reset fan
 def resetFan():
-    setFanSpeed(66)
+    setFanSpee(66)
 
 
 if len(sys.argv) > 1:
@@ -136,11 +133,11 @@ try:
         except:
             print("EPIC FAIL!")
             pass
-        #handleFanSpeed(temp, outside_dead_band_higher)
+
         time.sleep(WAIT_TIME)
 
 
 except KeyboardInterrupt:
- # trap a CTRL+C keyboard interrupt
+ # ctrl + c trap
     resetFan()
 #atexit.register(resetFan)
