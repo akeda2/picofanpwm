@@ -40,10 +40,40 @@ def duty2u16(duty):
 
 def setFanSpeed(pwm):
     fan.duty_u16(duty2u16(pwm))
-    print("setFanSpeed: ", str(int(pwm)))
+    print("setFanSpeed: ", str(int(pwm)), '%')
     gc.collect()
-        
+
 def temp2pwm(temperature):
+    print("Temperature: ", str(temperature), "C")
+    TEMP_OFF = 30
+    TEMP_MIN = 35
+    TEMP_MAX = 85
+    FAN_lowest = 35
+    FAN_highest = 100
+    FAN_OFF = 0
+    FAN_MAX = 100
+    FAN_CHANGE = float(FAN_highest - FAN_lowest) / float(TEMP_MAX - TEMP_MIN)
+    
+    if board == "pico":
+            led.duty_u16(30000)
+    
+    if temperature > TEMP_MIN:
+        diff = min(temperature, TEMP_MAX) - TEMP_MIN
+        duty = FAN_lowest + diff * FAN_CHANGE
+    elif temperature < TEMP_OFF:
+        duty = FAN_OFF
+    elif temperature >= TEMP_MAX:
+        duty = FAN_MAX
+    else:
+        # This should not happen...
+        duty = 66
+    
+    return(duty)
+    if board == "pico":
+            led.duty_u16(0)
+    gc.collect()
+
+def temp2pwm_old(temperature):
     MIN_TEMP = 35
     MIN_TEMP_DEAD_BAND = 5
     MAX_TEMP = 85
