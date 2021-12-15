@@ -54,9 +54,6 @@ def temp2pwm(temperature):
     FAN_MAX = 100
     FAN_CHANGE = float(FAN_highest - FAN_lowest) / float(TEMP_MAX - TEMP_MIN)
     
-    if board == "pico":
-            led.duty_u16(30000)
-    
     if temperature > TEMP_MIN:
         diff = min(temperature, TEMP_MAX) - TEMP_MIN
         duty = FAN_lowest + diff * FAN_CHANGE
@@ -67,11 +64,9 @@ def temp2pwm(temperature):
     else:
         # This should not happen...
         duty = 66
-    
-    return(duty)
-    if board == "pico":
-            led.duty_u16(0)
+
     gc.collect()
+    return(duty)
 
 def temp2pwm_old(temperature):
     MIN_TEMP = 35
@@ -83,8 +78,8 @@ def temp2pwm_old(temperature):
     FAN_MAX = 100
     while True:
         gc.collect()
-        if board == "pico":
-            led.duty_u16(30000)
+    #    if board == "pico":
+    #        led.duty_u16(30000)
         #outside_dead_band_higher = True
         # Turn off the fan if lower than lower dead band 
         if temperature < MIN_TEMP_DEAD_BAND + MIN_TEMP:
@@ -103,8 +98,8 @@ def temp2pwm_old(temperature):
         elif temperature > MAX_TEMP:
             duty = FAN_MAX
         return(duty)
-        if board == "pico":
-            led.duty_u16(0)
+     #   if board == "pico":
+     #       led.duty_u16(0)
         gc.collect()
         break
 
@@ -118,7 +113,7 @@ def readserial():
         if board == "tiny":
             blue.duty_u16(0)
         else:
-            led.duty_u16(30000)
+            led.duty_u16(65535)
         
         data = int(rawdata)
         #print(str(data)+'\r')
@@ -134,7 +129,7 @@ while True:
     if board == "tiny":
         red.duty_u16(0)
     else:
-        led.duty_u16(3000)
+        led.duty_u16(6000)
     
     if counter == 0:
         print("No serial data since 4 iterations, defaulting to PWM=80")
@@ -157,7 +152,7 @@ while True:
     if board == "tiny":
         red.duty_u16(65535)
     else:
-        led.duty_u16(100)
+        led.duty_u16(600)
     
     utime.sleep(1)
     gc.collect()
