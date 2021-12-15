@@ -48,7 +48,7 @@ def temp2pwm(temperature):
     TEMP_OFF = 30
     TEMP_MIN = 35
     TEMP_MAX = 85
-    FAN_lowest = 35
+    FAN_lowest = 30
     FAN_highest = 100
     FAN_OFF = 0
     FAN_MAX = 100
@@ -115,7 +115,11 @@ def readserial():
         else:
             led.duty_u16(65535)
         
-        data = int(rawdata)
+        try:
+            data = int(rawdata)
+        except:
+            print(str(rawdata))
+            pass
         #print(str(data)+'\r')
         if data > 19000:
             print(str(data)+'\r')
