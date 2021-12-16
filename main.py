@@ -54,15 +54,16 @@ def temp2pwm(temperature):
     FAN_MAX = 100
     FAN_CHANGE = float(FAN_highest - FAN_lowest) / float(TEMP_MAX - TEMP_MIN)
     
-    if temperature > TEMP_MIN:
+    if temperature >= TEMP_MIN:
         diff = min(temperature, TEMP_MAX) - TEMP_MIN
         duty = FAN_lowest + diff * FAN_CHANGE
     elif temperature <= TEMP_OFF:
         duty = FAN_OFF
     elif temperature >= TEMP_MAX:
         duty = FAN_MAX
+    elif temperature < TEMP_MIN:
+        duty = FAN_lowest
     else:
-        print("This should not happen...")
         duty = 66
 
     gc.collect()
