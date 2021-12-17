@@ -76,8 +76,10 @@ def readserial():
         
         if counter < 4:
             counter = 4
+        
         if board == "tiny":
             blue.duty_u16(0)
+            green.duty_u16(65535)
         else:
             led.duty_u16(65535)
         
@@ -102,6 +104,8 @@ while True:
         led.duty_u16(6000)
     
     if counter == 0:
+        if board == "tiny":
+            green.duty_u16(0)
         print("No serial data since 4 iterations, defaulting to PWM=80")
         data = 80
     else:
