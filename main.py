@@ -69,41 +69,6 @@ def temp2pwm(temperature):
     gc.collect()
     return(duty)
 
-def temp2pwm_old(temperature):
-    MIN_TEMP = 35
-    MIN_TEMP_DEAD_BAND = 5
-    MAX_TEMP = 85
-    FAN_LOW = 30
-    FAN_HIGH = 100
-    FAN_OFF = 0
-    FAN_MAX = 100
-    while True:
-        gc.collect()
-    #    if board == "pico":
-    #        led.duty_u16(30000)
-        #outside_dead_band_higher = True
-        # Turn off the fan if lower than lower dead band 
-        if temperature < MIN_TEMP_DEAD_BAND + MIN_TEMP:
-            outside_dead_band_higher = False
-        else:
-            outside_dead_band_higher = True
-        
-        if outside_dead_band_higher == False:
-            duty = FAN_OFF
-    # Run fan at calculated speed if being in or above dead zone not having passed lower dead band    
-        elif outside_dead_band_higher == True and temperature < MAX_TEMP:
-            step = float(FAN_HIGH - FAN_LOW)/float(MAX_TEMP - MIN_TEMP)  
-            temperature -= MIN_TEMP
-            duty = int(FAN_LOW + ( round(temperature) * step ))
-    # Set fan speed to MAXIMUM if the temperature is above MAX_TEMP
-        elif temperature > MAX_TEMP:
-            duty = FAN_MAX
-        return(duty)
-     #   if board == "pico":
-     #       led.duty_u16(0)
-        gc.collect()
-        break
-
 def readserial():
     global rawdata, data, counter
     while True:
