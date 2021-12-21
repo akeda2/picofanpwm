@@ -1,7 +1,7 @@
-# Sending PWM from temperature input on USB serial
-# David Åkesson 2021
+#Blinking thermometer
+#David Åkesson 2021
 
-# Blinking syntax: 0 = 20C, "_ ." = 19 (one under 0), "._ .." = 8 (10 under 0, 2 under 0)
+#Blinking syntax: 0 = 20C, "_ ." = 19 (one under 0), "._ .." = 8 (10 under 0, 2 under 0)
 
 import machine
 import utime
@@ -16,60 +16,74 @@ from machine import Pin, Timer, PWM
 WAIT_TIME = 2           # [s] Time to wait between each refresh
 PWM_FREQ = 25           # [kHz] 25kHz for Noctua PWM control
 
-degree = chr(176)
 gc.enable()
 
 sensor_temp = machine.ADC(4)
 conversion_factor = 3.3 / (65535)
 
 #FAN
-fan = PWM(Pin(15))
+fan = PWM(Pin(12))
 #fan = PWM(Pin(7))
 fan.freq(25000)
 fanPWM = 66
 
 #LED
-led = PWM(Pin(25))
-led.freq(1000)
+pwm = PWM(Pin(25))
+pwm.freq(1000)
 temperature = 21
-    
-def duty2u16(duty):
-    return int(duty*65535/100)
 
 def setFanSpeed(pwm):
-    fan.duty_u16(duty2u16(pwm))
-    print("setFanSpeed: ", str(int(pwm)), '%')
+    fan.duty_u16(int(pwm))
+    print("FANDUTY SET!", str(int(pwm)))
     gc.collect()
-
-def temp2pwm(temperature):
-    print("Temperature: ", str(temperature)+degree+"C")
-    TEMP_OFF = 22
-    TEMP_MIN = 30
-    TEMP_MAX = 40
-    FAN_lowest = 30
-    FAN_highest = 100
+    utime.sleep(2)
+# Handle fan speed
+def handleFanSpeed():
+    # Configurable temperature and fan speed
+    MIN_TEMP = 18
+    MIN_TEMP_DEAD_BAND = 5
+    MAX_TEMP = 40
+    FAN_LOW = 30
+    FAN_HIGH = 100
     FAN_OFF = 0
     FAN_MAX = 100
-    FAN_CHANGE = float(FAN_highest - FAN_lowest) / float(TEMP_MAX - TEMP_MIN)
-    
-    if temperature >= TEMP_MIN:
-        diff = min(temperature, TEMP_MAX) - TEMP_MIN
-        duty = FAN_lowest + diff * FAN_CHANGE
-        led.duty_u16(30000)
-    elif temperature <= TEMP_OFF:
-        duty = FAN_OFF
-        led.duty_u16(0)
-    elif temperature >= TEMP_MAX:
-        duty = FAN_MAX
-        led.duty_u16(65535)
-    elif temperature < TEMP_MIN:
-        duty = FAN_lowest
-        led.duty_u16(1000)
-    else:
-        duty = 66
-
-    gc.collect()
-    return(duty)
+    while True:
+        print("ENTERING PWM")
+        gc.collect()
+        pwm.duty_u16(30000)
+        #outside_dead_band_higher = True
+        global fanPWM
+        global temperature
+        print("PWM ", temperature)
+        # Turn off the fan if lower than lower dead band 
+        if temperature < MIN_TEMP_DEAD_BAND + MIN_TEMP:
+            outside_dead_band_higher = False
+        else:
+            outside_dead_band_higher = True
+        
+        if outside_dead_band_higher == False:
+            setFanSpeed(FAN_OFF)
+            print("Fan OFF") # Uncomment for testing
+#            return
+    # Run fan at calculated speed if being in or above dead zone not having passed lower dead band    
+        elif outside_dead_band_higher == True and temperature < MAX_TEMP:
+            step = float(FAN_HIGH - FAN_LOW)/float(MAX_TEMP - MIN_TEMP)  
+            temperature -= MIN_TEMP
+            setFanSpeed(int(FAN_LOW + ( round(temperature) * step )))
+            print("FANDUTY = ", str(int(FAN_LOW + ( round(temperature) * step )))) # Uncomment for testing
+#            return
+    # Set fan speed to MAXIMUM if the temperature is above MAX_TEMP
+        elif temperature > MAX_TEMP:
+            setFanSpeed(FAN_MAX)
+            print("Fan MAX") # Uncomment for testing
+#            return
+        print("PWM BOTTOM")
+        #utime.sleep(1)
+        pwm.duty_u16(0)
+        print("PWM END!")
+        gc.collect()
+        #utime.sleep(1)
+        break
 
 def round_to(n, precision):
     correction = 0.5 if n >= 0 else -0.5
@@ -147,7 +161,6 @@ while True:
     print("temperature = ", temperature)
     global kickstart
     kickstart = 0
-    setFanSpeed(temp2pwm(round(temperature)))
     gc.collect()
-    #handleFanSpeed()
+    handleFanSpeed()
     #memprint()
