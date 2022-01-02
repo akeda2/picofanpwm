@@ -6,7 +6,7 @@ StartLimitInterval=0
 [Service]
 User=root
 #ExecStart=/bin/bash /usr/local/bin/pfp service 66
-ExecStart=/usr/bin/python3 /usr/local/bin/tempsend.py
+ExecStart=/usr/bin/python3 /usr/local/bin/tempsend.py both
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=picofanpwm
