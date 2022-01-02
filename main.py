@@ -36,9 +36,9 @@ rawdata = 0
 counter = 8
 
 # CPU-fan
-fan1sett = [15, 30, 65, 30, 100]
+fan2sett = [15, 30, 65, 30, 100]
 # GPU-fan
-fan2sett = [15, 30, 55, 30, 100]
+fan1sett = [15, 30, 55, 30, 100]
 
 class Fan:
     TEMP_OFF = None
@@ -55,7 +55,7 @@ class Fan:
     
     def __init__(self, mypin: int, fandata):
         self.PWM = PWM(Pin(mypin))
-        print("object created")
+        #print("object created")
         self.TEMP_OFF = int(fandata[0])
         self.TEMP_MIN = int(fandata[1])
         self.TEMP_MAX = int(fandata[2])
@@ -163,36 +163,30 @@ while True:
         counter -= 1
     
     # Did we just receive temperature?
-    
+    # And more than one fan?
     if data > 199000:
+        print(str(data))
         if board == "pico":
-            fan1 = Fan(15, fan1sett)
+            fan2 = Fan(15, fan2sett)
         elif board == "tiny":
-            fan1 = Fan(5, fan1sett)
+            fan2 = Fan(5, fan2sett)
         try:
-            fan1.setpwm(data - 200000)
+            fan2.setpwm(data - 200000)
         except:
-            print("Fail 1")
+            print("Fail 2")
         data = ''
     elif data > 99000:
+        print(str(data))
         if board == "pico":
-            fan2 = Fan(16, fan2sett)
+            fan1 = Fan(16, fan1sett)
         elif board == "tiny":
-            fan2 = Fan(6, fan2sett)
+            fan1 = Fan(6, fan1sett)
         try:
             fan2.setpwm(data - 100000)
         except:
-            print("Fail 2")
+            print("Fail 1")
             pass
         data = ''
-        #myvalue = int(temp2pwm(data - 10000))
-        #print(myvalue)
-        #try:
-        #    fan1.setpwm(myvalue)
-        #    fan2.setpwm(myvalue)
-        #except:
-        #    print(f"FAIL!", myvalue)
-        #    pass
         
     elif data > 9000:
         setFanSpeed(temp2pwm(data - 10000))

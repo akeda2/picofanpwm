@@ -122,14 +122,14 @@ try:
                 print("EPIC FAIL!")
                 #pass
         elif SOURCE == "both":
-            temp1 = float(getCpuTemperature() + 200000)
-            temp2 = float(getGpuTemperature() + 100000)
+            temp2 = float(getCpuTemperature() + 200000)
+            temp1 = float(getGpuTemperature() + 100000)
             try:
                 sendFanData(temp1)
             except:
                 print("EPIC FAIL 1")
                 pass
-            sendFanData(temp1)
+            #sendFanData(temp1)
             
             time.sleep(SLEEPTIME)
             try:
@@ -137,7 +137,7 @@ try:
             except:
                 print("EPIC FAIL 2")
                 pass
-            sendFanData(temp2)
+            #sendFanData(temp2)
             
         elif (int(SOURCE)) > 9000:
             sendFanData(int(SOURCE))
