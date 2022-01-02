@@ -8,8 +8,8 @@ from machine import Pin, Timer, PWM
 
 gc.enable()
 
-board = "pico"
-#board = "tiny"
+#board = "pico"
+board = "tiny"
 
 # For regular RPi-pico
 if board == "pico":
@@ -35,8 +35,11 @@ data = 66
 rawdata = 0
 counter = 8
 
-fan1sett = [15, 30, 55, 30, 100]
-fan2sett = [15, 30, 65, 30, 100]
+# CPU-fan
+fan1sett = [15, 30, 65, 30, 100]
+# GPU-fan
+fan2sett = [15, 30, 55, 30, 100]
+
 class Fan:
     TEMP_OFF = None
     TEMP_MIN = None
@@ -135,7 +138,8 @@ def readserial():
             pass
         #print(str(data)+'\r')
         if data > 90000:
-            print(str(data))
+            gc.collect()
+            #print(str(data))
         elif data > 19000:
             print(str(data)+'\r')
             #sys.stdout.write("GLENN")
@@ -161,14 +165,20 @@ while True:
     # Did we just receive temperature?
     
     if data > 199000:
-        fan1 = Fan(15, fan1sett)
+        if board == "pico":
+            fan1 = Fan(15, fan1sett)
+        elif board == "tiny":
+            fan1 = Fan(5, fan1sett)
         try:
             fan1.setpwm(data - 200000)
         except:
             print("Fail 1")
         data = ''
     elif data > 99000:
-        fan2 = Fan(16, fan2sett)
+        if board == "pico":
+            fan2 = Fan(16, fan2sett)
+        elif board == "tiny":
+            fan2 = Fan(6, fan2sett)
         try:
             fan2.setpwm(data - 100000)
         except:
@@ -186,7 +196,7 @@ while True:
         
     elif data > 9000:
         setFanSpeed(temp2pwm(data - 10000))
-    elif data > 0:
+    else:# data > 0:
         # Or just pwm duty?
         setFanSpeed(data)
     

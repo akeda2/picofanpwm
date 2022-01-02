@@ -20,7 +20,7 @@ PWM_FREQ = 25     # 25kHz is the default
 
 # Get CPU temp from sys/class/thermal:
 def getCpuTemperature():
-    with open(r"/sys/class/thermal/thermal_zone8/temp") as File:
+    with open(r"/sys/class/thermal/thermal_zone3/temp") as File:
         res = File.readline()
     temp = float(res) / 1000
     #print(str(int(res)))
@@ -123,12 +123,12 @@ try:
                 #pass
         elif SOURCE == "both":
             temp1 = float(getCpuTemperature() + 200000)
-            temp2 = float(getCpuTemperature() + 100000)
+            temp2 = float(getGpuTemperature() + 100000)
             try:
                 sendFanData(temp1)
             except:
                 print("EPIC FAIL 1")
-                #pass
+                pass
             sendFanData(temp1)
             
             time.sleep(SLEEPTIME)
@@ -136,6 +136,7 @@ try:
                 sendFanData(temp2)
             except:
                 print("EPIC FAIL 2")
+                pass
             sendFanData(temp2)
             
         elif (int(SOURCE)) > 9000:
@@ -149,11 +150,11 @@ try:
         else:
             temp = float(getGpuTemperature())
 
-        try:
-            setFanSpeed(temp)
-        except:
-            print("EPIC FAIL!")
-            pass
+            try:
+                setFanSpeed(temp)
+            except:
+                print("EPIC FAIL!")
+                pass
 
         time.sleep(SLEEPTIME)
 
