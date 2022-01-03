@@ -95,6 +95,7 @@ while True:
         counter -= 1
     # Did we just receive temperature?
     # And more than one fan?
+    data = int(data)
     if data > 199000:
         print(str(data))
         try:
