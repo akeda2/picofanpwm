@@ -95,7 +95,12 @@ while True:
         counter -= 1
     # Did we just receive temperature?
     # And more than one fan?
-    data = int(data)
+    try:
+        data = int(data)
+    except:
+        print("Currupt serial input?", data)
+        data = 1000065
+        pass
     if data > 199000:
         print(str(data))
         try:
