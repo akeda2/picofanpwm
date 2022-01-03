@@ -125,7 +125,26 @@ def temp2pwm(temperature):
 
     gc.collect()
     return(duty)
-
+def readser():
+    global rawdata, data, counter
+    rawdata = sys.stdin.readline()
+        
+    if counter < 4:
+        counter = 4
+        
+    if board == "tiny":
+        blue.duty_u16(0)
+        green.duty_u16(65535)
+    else:
+        led.duty_u16(65535)
+        
+    try:
+        data = int(rawdata)
+    except:
+        print(str(rawdata))
+        pass
+    gc.collect()
+        
 def readserial():
     global rawdata, data, counter
     while True:
@@ -145,21 +164,22 @@ def readserial():
         except:
             print(str(rawdata))
             pass
-        #print(str(data)+'\r')
-        if data > 90000:
-            gc.collect()
-            #print(str(data))
-        elif data > 19000:
-            print(str(data)+'\r')
-            #sys.stdout.write("GLENN")
-            data = 66 #str(data) + '\r')
+        ##print(str(data)+'\r')
+        ##if data > 90000:
+        ##    gc.collect()
+          #  #print(str(data))
+        ##elif data > 19000:
+        # #   print(str(data)+'\r')
+          #  #sys.stdout.write("GLENN")
+        #  #  data = 66 #str(data) + '\r')
         gc.collect()
 
-utime.sleep(1)
-readserialThread = _thread.start_new_thread(readserial, ())
-utime.sleep(5)
+#utime.sleep(1)
+#readserialThread = _thread.start_new_thread(readserial, ())
+#utime.sleep(5)
 
 while True:
+    readser()
     if board == "tiny":
         red.duty_u16(0)
     else:
@@ -177,10 +197,6 @@ while True:
     # And more than one fan?
     if data > 199000:
         print(str(data))
-        #if board == "pico":
-        #    fan2 = Fan(15, fan2sett)
-        #elif board == "tiny":
-        #    fan2 = Fan(5, fan2sett)
         try:
             fan2.setpwm(data - 200000)
         except:
@@ -188,16 +204,11 @@ while True:
         data = ''
     elif data > 99000:
         print(str(data))
-        #if board == "pico":
-        #    fan1 = Fan(16, fan1sett)
-        #elif board == "tiny":
-        #    fan1 = Fan(6, fan1sett)
         try:
             fan1.setpwm(data - 100000)
         except:
             print("Fail 1")
             pass
-        #fan1.setpwm(data - 100000)
         data = ''
         
     elif data > 9000:
