@@ -220,12 +220,12 @@ while True:
     if board == "tiny":
         blue.duty_u16(65535)
     
-    utime.sleep(1)
+    #utime.sleep(1)
     
     if board == "tiny":
         red.duty_u16(65535)
     else:
         led.duty_u16(600)
     
-    utime.sleep(1)
+    #utime.sleep(1)
     gc.collect()
