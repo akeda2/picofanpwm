@@ -155,7 +155,9 @@ def readserial():
             data = 66 #str(data) + '\r')
         gc.collect()
 
+utime.sleep(1)
 readserialThread = _thread.start_new_thread(readserial, ())
+utime.sleep(5)
 
 while True:
     if board == "tiny":

@@ -31,14 +31,15 @@ class Fan:
         
     def temp22pwm(self, temperature: int):
         self.FAN_CHANGE = float(self.FAN_highest - self.FAN_lowest) / float(self.TEMP_MAX - self.TEMP_MIN)
-    
-        if temperature >= self.TEMP_MIN:
+        
+        if temperature >= self.TEMP_MAX:
+            duty = self.FAN_MAX
+        elif temperature >= self.TEMP_MIN:
             diff = min(temperature, self.TEMP_MAX) - self.TEMP_MIN
             duty = self.FAN_lowest + diff * self.FAN_CHANGE
         elif temperature <= self.TEMP_OFF:
             duty = self.FAN_OFF
-        elif temperature >= self.TEMP_MAX:
-            duty = self.FAN_MAX
+        
         elif temperature < self.TEMP_MIN:
             duty = self.FAN_lowest
         else:
