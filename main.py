@@ -2,6 +2,7 @@ import machine
 import utime
 import sys
 import _thread
+from fan import Fan
 from _thread import start_new_thread
 import gc
 from machine import Pin, Timer, PWM
@@ -11,9 +12,16 @@ gc.enable()
 #board = "pico"
 board = "tiny"
 
+# GPU-fan
+fan1sett = [15, 30, 55, 30, 100]
+# CPU-fan
+fan2sett = [15, 30, 65, 30, 100]
+
 # For regular RPi-pico
 if board == "pico":
     fan = PWM(Pin(12))
+    fan1 = Fan(16, fan1sett)
+    fan2 = Fan(15, fan2sett)
     
     led = PWM(Pin(25))
     led.freq(1000)
@@ -21,6 +29,8 @@ if board == "pico":
 # For tiny2040
 if board == "tiny":
     fan = PWM(Pin(7))
+    fan1 = Fan(6, fan1sett)
+    fan2 = Fan(5, fan2sett)
     
     red = PWM(Pin(18))
     red.freq(1000)
@@ -35,12 +45,9 @@ data = 66
 rawdata = 0
 counter = 8
 
-# CPU-fan
-fan2sett = [15, 30, 65, 30, 100]
-# GPU-fan
-fan1sett = [15, 30, 55, 30, 100]
 
-class Fan:
+
+class SFan:
     TEMP_OFF = None
     TEMP_MIN = None
     TEMP_MAX = None
@@ -78,10 +85,12 @@ class Fan:
             duty = 66
 
         gc.collect()
-        return(duty) 
+        return(duty)
+    def duty22u16(duty):
+        return int(duty*65535/100)
     def setpwm(self, myduty):
         print("setting pwm from data:", myduty)
-        self.PWM.duty_u16(duty2u16(self.temp22pwm(myduty)))
+        self.PWM.duty_u16(self.duty22u16(self.temp22pwm(myduty)))
 
 def duty2u16(duty):
     return int(duty*65535/100)
@@ -166,10 +175,10 @@ while True:
     # And more than one fan?
     if data > 199000:
         print(str(data))
-        if board == "pico":
-            fan2 = Fan(15, fan2sett)
-        elif board == "tiny":
-            fan2 = Fan(5, fan2sett)
+        #if board == "pico":
+        #    fan2 = Fan(15, fan2sett)
+        #elif board == "tiny":
+        #    fan2 = Fan(5, fan2sett)
         try:
             fan2.setpwm(data - 200000)
         except:
@@ -177,15 +186,16 @@ while True:
         data = ''
     elif data > 99000:
         print(str(data))
-        if board == "pico":
-            fan1 = Fan(16, fan1sett)
-        elif board == "tiny":
-            fan1 = Fan(6, fan1sett)
+        #if board == "pico":
+        #    fan1 = Fan(16, fan1sett)
+        #elif board == "tiny":
+        #    fan1 = Fan(6, fan1sett)
         try:
-            fan2.setpwm(data - 100000)
+            fan1.setpwm(data - 100000)
         except:
             print("Fail 1")
             pass
+        #fan1.setpwm(data - 100000)
         data = ''
         
     elif data > 9000:
