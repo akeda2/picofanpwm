@@ -7,11 +7,12 @@ import os
 #import subprocess
 import io
 import serial
+from fansettings import FanSettings
 
 def printHelp():
     print('\nCommand line options:\n\n  help        -        Show (this) help\n  gpu         -        Send temperature data from GPU (continuously)\n  cpu         -        Send temperature data from CPU (continuously)\n  nn (ex: 66) -        Send fan PWM duty value\n  10nnn (ex: 10066) -  Send temperature value\n')
 
-
+fansett = FanSettings()
 # Default source, change with command line [gpu|cpu]
 SOURCE = "gpu"
 
@@ -20,7 +21,9 @@ PWM_FREQ = 25     # 25kHz is the default
 
 # Get CPU temp from sys/class/thermal:
 def getCpuTemperature():
-    with open(r"/sys/class/thermal/thermal_zone3/temp") as File:
+    cpupath = fansett.getcpupath()
+    #with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
+    with open(cpupath) as File:
         res = File.readline()
     temp = float(res) / 1000
     #print(str(int(res)))

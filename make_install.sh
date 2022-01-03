@@ -19,5 +19,8 @@ sudo ln -s $(pwd)/tempsend.py /usr/local/bin
 echo "Fake GPU? (developing on a laptop?)"
 cont && sudo ln -s $(pwd)/fake-gpu.sh /usr/local/bin/nvidia-smi
 
+echo "Reset settings to defaults?"
+cont && cp fansettings.defaults.py fansettings.py
+
 echo "Start service?"
 cont && sudo systemctl start picofanpwm

@@ -4,6 +4,12 @@ class FanSettings:
     board = "pico"
     #board = "tiny"
     
+    # What path to use for CPU-temp?:
+    cpupath = '/sys/class/thermal/thermal_zone3/temp'
+    #cpupath = '/sys/class/thermal/thermal_zone0/temp'
+    def getcpupath(self):
+        return self.cpupath
+    
     def whichboard(self):
         return self.board
     
