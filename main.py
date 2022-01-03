@@ -11,20 +11,15 @@ from fansettings import FanSettings
 
 gc.enable()
 
-#board = "pico"
-#board = "tiny"
-
 # Set clock to 250MHz since we're not running on batteries:
 machine.freq(250000000)
-print(str(machine.freq()))
-
-#conf = configparser.RawConfigParser()
-#conf.read(fansettings.py)
+print(str(int(machine.freq()/1000000)), "MHz clock")
 
 fanconf = FanSettings()
 board = fanconf.whichboard()
 print("Running on",board)
 howmany = fanconf.howmany()
+print(howmany, "fans")
 
 # GPU-fan:
 #fan1sett = [15, 30, 55, 30, 100]
