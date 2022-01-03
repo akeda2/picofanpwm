@@ -99,7 +99,7 @@ while True:
         data = int(data)
     except:
         print("Currupt serial input?", data)
-        data = 1000065
+        data = 100065
         pass
     if data > 199000:
         print(str(data))
