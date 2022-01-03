@@ -10,12 +10,14 @@ cont (){
         fi
 }
 
+pushd /etc/systemd/system
 sudo cp picofanpwm.service /etc/systemd/system
 sudo systemctl enable picofanpwm.service
+popd
 
 sudo ln -s $(pwd)/tempsend.py /usr/local/bin
 echo "Fake GPU? (developing on a laptop?)"
 cont && sudo ln -s $(pwd)/fake-gpu.sh /usr/local/bin/nvidia-smi
 
 echo "Start service?"
-cont && sudo systemctl start picofampwm
+cont && sudo systemctl start picofanpwm

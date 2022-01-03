@@ -7,20 +7,34 @@ from _thread import start_new_thread
 import gc
 from machine import Pin, Timer, PWM
 import legacy
+from fansettings import FanSettings
 
 gc.enable()
 
 #board = "pico"
-board = "tiny"
+#board = "tiny"
 
 # Set clock to 250MHz since we're not running on batteries:
 machine.freq(250000000)
 print(str(machine.freq()))
 
-# GPU-fan
-fan1sett = [15, 30, 55, 30, 100]
-# CPU-fan
-fan2sett = [15, 30, 65, 30, 100]
+#conf = configparser.RawConfigParser()
+#conf.read(fansettings.py)
+
+fanconf = FanSettings()
+board = fanconf.whichboard()
+print("Running on",board)
+howmany = fanconf.howmany()
+
+# GPU-fan:
+#fan1sett = [15, 30, 55, 30, 100]
+fan1sett = fanconf.getsett(1)
+print(str(fan1sett))
+
+# CPU-fan:
+#fan2sett = [15, 30, 65, 30, 100]
+fan2sett = fanconf.getsett(2)
+print(str(fan2sett))
 
 # For regular RPi-pico
 if board == "pico":
