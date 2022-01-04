@@ -57,30 +57,57 @@ if board == "tiny":
 fan.freq(25000)
 data = 66
 rawdata = 0
-counter = 8
+counter = 64
 
 def readser():
-    global rawdata, data, counter
-    rawdata = sys.stdin.readline()
+    global rawdata, counter
+    while True:
+        arawdata = sys.stdin.readline()
+        rawdata = arawdata
+        #print("-----------------------Thread-rawdata:", str(rawdata))
+        if counter < 64:
+            counter = 64
         
-    if counter < 4:
-        counter = 4
-        
-    if board == "tiny":
-        blue.duty_u16(0)
-        green.duty_u16(65535)
-    else:
-        led.duty_u16(65535)
-        
+        if board == "tiny":
+            blue.duty_u16(0)
+            green.duty_u16(65535)
+        else:
+            led.duty_u16(65535)
+    
+    #try:
+    #    data = int(rawdata)
+    #except:
+    #    print("Exception:", str(rawdata))
+    #    pass
+        gc.collect()
+    #utime.sleep(1)
+
+readserialThread = _thread.start_new_thread(readser, ())
+
+last = 66
+
+while True:
+#    readser()
+    utime.sleep(0.2)
     try:
         data = int(rawdata)
     except:
-        print(str(rawdata))
+        print("Currupt serial input?", data)
+        data = 100065
         pass
-    gc.collect()
+    
+    
+    changed = last != data
+    if changed:
+        #print("Value changed")
+        #print("Rawdata:", str(int(rawdata)),"Data:", str(int(data)))
+        last = data
+    elif data == 0:
+        data = 66
+    else:
+        #print("No change...")
+        data = last
 
-while True:
-    readser()
     if board == "tiny":
         red.duty_u16(0)
     else:
@@ -89,26 +116,21 @@ while True:
     if counter == 0:
         if board == "tiny":
             green.duty_u16(0)
-        print("No serial data since 4 iterations, defaulting to PWM=80")
+        print("No serial data since 64 iterations, defaulting to PWM=80")
         data = 80
     else:
         counter -= 1
     # Did we just receive temperature?
     # And more than one fan?
-    try:
-        data = int(data)
-    except:
-        print("Currupt serial input?", data)
-        data = 100065
-        pass
-    if data > 199000:
+    
+    if data > 199000 and changed:
         print(str(data))
         try:
             fan2.setpwm(data - 200000)
         except:
             print("Fail 2")
         data = ''
-    elif data > 99000:
+    elif data > 99000 and changed:
         print(str(data))
         try:
             fan1.setpwm(data - 100000)
@@ -116,11 +138,20 @@ while True:
             print("Fail 1")
             pass
         data = ''
-    elif data > 9000:
-        setFanSpeed(temp2pwm(data - 10000))
-    else:# data > 0:
+    elif data > 9000 and changed:
+        #legacy.setFanSpeed(temp2pwm(data - 10000))
+        fan1.setpwm(fan1.temp22pwm(data - 10000))
+        fan2.setpwm(fan2.temp22pwm(data - 10000))
+        print("FAIL!")
+    elif data == 80:
         # Or just pwm duty?
-        setFanSpeed(data)
+        #legacy.setFanSpeed(data)
+        fan1.setpwm(data)
+        fan2.setpwm(data)
+        #print("---Else!")
+    elif data == 66:
+        fan1.setpwm(66)
+        fan2.setpwm(66)
     
     if board == "tiny":
         blue.duty_u16(65535)

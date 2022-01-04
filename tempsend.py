@@ -130,7 +130,7 @@ try:
             try:
                 sendFanData(temp1)
             except:
-                print("EPIC FAIL 1")
+                print("EPIC FAIL temp1")
                 pass
             #sendFanData(temp1)
             
@@ -138,7 +138,7 @@ try:
             try:
                 sendFanData(temp2)
             except:
-                print("EPIC FAIL 2")
+                print("EPIC FAIL temp2")
                 pass
             #sendFanData(temp2)
             

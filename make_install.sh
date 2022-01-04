@@ -10,8 +10,8 @@ cont (){
         fi
 }
 
-pushd /etc/systemd/system
 sudo cp picofanpwm.service /etc/systemd/system
+pushd /etc/systemd/system
 sudo systemctl enable picofanpwm.service
 popd
 
@@ -19,7 +19,7 @@ sudo ln -s $(pwd)/tempsend.py /usr/local/bin
 echo "Fake GPU? (developing on a laptop?)"
 cont && sudo ln -s $(pwd)/fake-gpu.sh /usr/local/bin/nvidia-smi
 
-echo "Reset settings to defaults?"
+echo "Reset settings.py to defaults?"
 cont && cp fansettings.defaults.py fansettings.py
 
 echo "Start service?"
