@@ -21,6 +21,9 @@ print("Running on",board)
 howmany = fanconf.howmany()
 print(howmany, "fans")
 
+#for p in howmany:
+#    fansett
+
 # GPU-fan:
 #fan1sett = [15, 30, 55, 30, 100]
 fan1sett = fanconf.getsett(1)
@@ -34,8 +37,15 @@ print(str(fan2sett))
 # For regular RPi-pico
 if board == "pico":
     fan = PWM(Pin(12))
-    fan1 = Fan(16, fan1sett)
-    fan2 = Fan(15, fan2sett)
+    i = 0
+    fans = []
+    for p in range(fanconf.howmany()+1):
+        print(str(p))
+        fans.append(Fan(16-i, fanconf.getsett(p)))
+        i+=1
+        print(fans)
+    #fan1 = Fan(16, fan1sett)
+    #fan2 = Fan(15, fan2sett)
     
     led = PWM(Pin(25))
     led.freq(1000)
@@ -123,35 +133,46 @@ while True:
     # Did we just receive temperature?
     # And more than one fan?
     
-    if data > 199000 and changed:
+    if data > 99000 and changed:
         print(str(data))
         try:
-            fan2.setpwm(data - 200000)
+            d = str(data)
+            e = int(d[0])
+            print(str(e))
+            fans[e].setpwm(data - (e * 100000))
+            #fan2.setpwm(data - 200000)
         except:
-            print("Fail 2")
-        data = ''
-    elif data > 99000 and changed:
-        print(str(data))
-        try:
-            fan1.setpwm(data - 100000)
-        except:
-            print("Fail 1")
-            pass
-        data = ''
+            print("Fail", str(data))
+        data = None
+    #elif data > 99000 and changed:
+    #    print(str(data))
+    #    try:
+    #        fan1.setpwm(data - 100000)
+    #    except:
+    #        print("Fail 1")
+    #        pass
+    #    data = ''
     elif data > 9000 and changed:
         #legacy.setFanSpeed(temp2pwm(data - 10000))
-        fan1.setpwm(fan1.temp22pwm(data - 10000))
-        fan2.setpwm(fan2.temp22pwm(data - 10000))
+        for u in fans:
+            u.setpwm(data - 10000)
+            #fans[int(str(data)[0])].setpwm(data - (e * 10000))
+        #fan1.setpwm(fan1.temp22pwm(data - 10000))
+        #fan2.setpwm(fan2.temp22pwm(data - 10000))
         print("FAIL!")
     elif data == 80:
         # Or just pwm duty?
         #legacy.setFanSpeed(data)
-        fan1.setpwm(data)
-        fan2.setpwm(data)
+        for u in fans:
+            u.setpwm(data)
+        #fan1.setpwm(data)
+        #fan2.setpwm(data)
         #print("---Else!")
     elif data == 66:
-        fan1.setpwm(66)
-        fan2.setpwm(66)
+        for u in fans:
+            u.setpwm(data)
+        #fan1.setpwm(66)
+        #fan2.setpwm(66)
     
     if board == "tiny":
         blue.duty_u16(65535)
