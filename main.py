@@ -133,7 +133,7 @@ while True:
     elif data <= 100 and data > 0:
         # Or just pwm duty?
         for u in fans:
-            u.setpwm(data)
+            u.setpwmfrompwm(data)
         
     if board == "tiny":
         blue.duty_u16(65535)

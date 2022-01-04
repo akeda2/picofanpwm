@@ -48,5 +48,8 @@ class Fan:
     def duty22u16(self, duty):
         return int(duty*65535/100)
     def setpwm(self, myduty):
-        print("setting pwm from data:", myduty)
+        print("Setting pwm from temp-data:", myduty)
         self.PWM.duty_u16(self.duty22u16(self.temp22pwm(myduty)))
+    def setpwmfrompwm(self, myduty):
+        print("Setting pwm from pwm-data:", myduty)
+        self.PWM.duty_u16(self.duty22u16(myduty))
