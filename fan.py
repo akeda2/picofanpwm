@@ -2,7 +2,6 @@ import machine
 import utime
 import sys
 import _thread
-#from fan import Fan
 from _thread import start_new_thread
 import gc
 from machine import Pin, Timer, PWM
@@ -18,11 +17,10 @@ class Fan:
     
     FAN_OFF = 0
     FAN_MAX = 100
-    #myfan = PWM(pin(15))
     
     def __init__(self, mypin: int, fandata):
         self.PWM = PWM(Pin(mypin))
-        #print("object created")
+        self.PWM.freq(25000)
         self.TEMP_OFF = int(fandata[0])
         self.TEMP_MIN = int(fandata[1])
         self.TEMP_MAX = int(fandata[2])

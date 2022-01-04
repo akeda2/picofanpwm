@@ -36,14 +36,8 @@ print(str(fan2sett))
 
 # For regular RPi-pico
 if board == "pico":
-    fan = PWM(Pin(12))
-    i = 0
-    fans = []
-    for p in range(fanconf.howmany()+1):
-        print(str(p))
-        fans.append(Fan(16-i, fanconf.getsett(p)))
-        i+=1
-        print(fans)
+    #fan = PWM(Pin(12))
+    pinbegin = 17
     #fan1 = Fan(16, fan1sett)
     #fan2 = Fan(15, fan2sett)
     
@@ -52,9 +46,10 @@ if board == "pico":
 
 # For tiny2040
 if board == "tiny":
-    fan = PWM(Pin(7))
-    fan1 = Fan(6, fan1sett)
-    fan2 = Fan(5, fan2sett)
+    #fan = PWM(Pin(7))
+    pinbegin = 7
+    #fan1 = Fan(6, fan1sett)
+    #fan2 = Fan(5, fan2sett)
     
     red = PWM(Pin(18))
     red.freq(1000)
@@ -64,7 +59,15 @@ if board == "tiny":
     blue = PWM(Pin(20))
     blue.freq(1000)
 
-fan.freq(25000)
+i = 0
+fans = []
+for p in range(fanconf.howmany()+1):
+    print(str(p))
+    fans.append(Fan(pinbegin-i, fanconf.getsett(p)))
+    i+=1
+    print(fans)
+
+#fan.freq(25000)
 data = 66
 rawdata = 0
 counter = 64
@@ -138,7 +141,7 @@ while True:
         try:
             d = str(data)
             e = int(d[0])
-            print(str(e))
+            print("Fan", str(e))
             fans[e].setpwm(data - (e * 100000))
             #fan2.setpwm(data - 200000)
         except:
