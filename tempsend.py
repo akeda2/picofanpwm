@@ -42,6 +42,21 @@ class Sender:
     DEVICE = '/dev/ttyACM'
 
     def __init__(self, device=DEVICE, baud=115200, timeout=1):
+        i = 0
+        while i <= 20:
+            myDevice = device + str(i)
+            if os.path.exists(myDevice):
+                exDevice = myDevice
+                break
+            else:
+                i+=1
+        try:
+            self.serial = serial.Serial(exDevice, baud, timeout=timeout, write_timeout=2)
+        except:
+            print("ERROR! Could not connect with serial port!")
+            raise
+    
+    def old__init__(self, device=DEVICE, baud=115200, timeout=1):
         myDevice = device + '0'
         if os.path.exists(myDevice):
             exDevice = myDevice
