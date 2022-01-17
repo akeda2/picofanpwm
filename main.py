@@ -107,13 +107,17 @@ while True:
     else:
         led.duty_u16(6000)
     
-    if counter == 0 and manual == False:
+    if counter <= 0 and bool(manual):
         if board == "tiny":
             green.duty_u16(0)
         print("No serial data since 64 iterations, defaulting to PWM=80")
         data = 80
     else:
-        counter -= 1
+        if counter > 0:
+            counter -= 1
+        else:
+            counter = 0
+        #print(counter)
         
     # Did we just receive temperature?
     # And more than one fan?
