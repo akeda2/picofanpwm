@@ -78,6 +78,7 @@ def readser():
 readserialThread = _thread.start_new_thread(readser, ())
 
 last = 66
+manual = False
 
 while True:
     utime.sleep(0.2)
@@ -93,6 +94,7 @@ while True:
         #print("Value changed")
         #print("Rawdata:", str(int(rawdata)),"Data:", str(int(data)))
         last = data
+        manual = False
     elif data == 0:
         data = 66
     else:
@@ -104,7 +106,7 @@ while True:
     else:
         led.duty_u16(6000)
     
-    if counter == 0:
+    if counter == 0 and manual == False:
         if board == "tiny":
             green.duty_u16(0)
         print("No serial data since 64 iterations, defaulting to PWM=80")
@@ -132,6 +134,7 @@ while True:
         print("FAIL!")
     elif data <= 100 and data > 0:
         # Or just pwm duty?
+        manual = True
         for u in fans:
             u.setpwmfrompwm(data)
         
