@@ -100,6 +100,7 @@ while True:
     else:
         #print("No change...")
         data = last
+        manual = False
 
     if board == "tiny":
         red.duty_u16(0)
