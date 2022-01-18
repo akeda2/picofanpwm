@@ -10,7 +10,14 @@ import serial
 from fansettings import FanSettings
 
 def printHelp():
-    print('\nCommand line options:\n\n  help        -        Show (this) help\n  gpu         -        Send temperature data from GPU (continuously)\n  cpu         -        Send temperature data from CPU (continuously)\n  both        -        Send temperature data from CPU (continuously)\n  nn (ex: 66) -        Send fan PWM duty value\n  10nnn (ex: 10066) -  Send temperature value\n')
+    print('\n## picofanpwm - tempsend\n\
+Command line options:\n\n\
+\thelp        -        Show (this) help\n\
+\tgpu         -        Send temperature data from GPU (continuously)\n\
+\tcpu         -        Send temperature data from CPU (continuously)\n\
+\tboth        -        Send temperature data from CPU (continuously)\n\
+\t10nnn (ex: 10066) -  Send temperature value\n\
+\tnn (ex: 66) -        Send fan PWM duty value\n')
 
 fansett = FanSettings()
 # Default source, change with command line [gpu|cpu|both]
@@ -147,20 +154,17 @@ try:
             except:
                 print("EPIC FAIL temp1")
                 pass
-            #sendFanData(temp1)
-            
             time.sleep(SLEEPTIME)
             try:
                 sendFanData(temp2)
             except:
                 print("EPIC FAIL temp2")
                 pass
-            #sendFanData(temp2)
             
-        elif (int(SOURCE)) > 9000:
-            sendFanData(int(SOURCE))
-            print(int(SOURCE))
-            break
+#        elif (int(SOURCE)) > 9000:
+#            sendFanData(int(SOURCE))
+#            print(int(SOURCE))
+#            break
         elif (int(SOURCE)) > 0:
             sendFanData(int(SOURCE))
             print(int(SOURCE))

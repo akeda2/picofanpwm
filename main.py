@@ -82,6 +82,7 @@ manual = False
 
 while True:
     utime.sleep(0.2)
+    # Try to read data from serial thread global var
     try:
         data = int(rawdata)
     except:
@@ -100,17 +101,18 @@ while True:
     else:
         #print("No change...")
         data = last
-        manual = False
+        #manual = False
 
     if board == "tiny":
         red.duty_u16(0)
     else:
         led.duty_u16(6000)
-    
-    if counter <= 0 and bool(manual):
+        
+    # For safety - if no data has come in since n iterations - set all fans to 80% pwm
+    if counter <= 0 and not bool(manual):
         if board == "tiny":
             green.duty_u16(0)
-        print("No serial data since 64 iterations, defaulting to PWM=80")
+        print("No serial data since 64 iterations. Defaulting to 80% PWM on all fans.")
         data = 80
     else:
         if counter > 0:
@@ -127,22 +129,35 @@ while True:
             d = str(data)
             e = int(d[0])
             print("Fan", str(e))
-            fans[e].setpwm(data - (e * 100000))
-            #fans[int(str(data)[0])].setpwm(data - (e * 10000))
+            fans[e].setpwmfromtemp(data - (e * 100000))
+            
         except:
             print("Fail", str(data))
         data = None
         
     elif data > 9000 and changed:
-        for u in fans:
-            u.setpwm(data - 10000)
-        print("FAIL!")
+        #for u in fans:
+        #    u.setpwmfromtemp(data - 10000)
+        #print("FAIL!")
+        try:
+            fans[int(str(data)[0])].setpwmfromtemp(data - (int(str(data)[0]) * 10000))
+        except:
+            print("Fail", str(data))
+        data = None
+    elif data > 100 and data < 900 and changed:
+        try:
+            fans[int(str(data)[0])].setpwmfrompwm(data - (int(str(data)[0]) * 100))
+        except:
+            print("Fail", str(data))
+        data = None
+        manual = True
     elif data <= 100 and data > 0:
         # Or just pwm duty?
-        manual = True
+        #manual = True
+        #print("Manual mode is ON")
         for u in fans:
             u.setpwmfrompwm(data)
-        
+        data = None
     if board == "tiny":
         blue.duty_u16(65535)
         red.duty_u16(65535)

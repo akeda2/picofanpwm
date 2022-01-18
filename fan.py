@@ -1,8 +1,8 @@
 import machine
-import utime
-import sys
-import _thread
-from _thread import start_new_thread
+#import utime
+#import sys
+#import _thread
+#from _thread import start_new_thread
 import gc
 from machine import Pin, Timer, PWM
 
@@ -27,7 +27,7 @@ class Fan:
         self.FAN_lowest = int(fandata[3])
         self.FAN_highest = int(fandata[4])
         
-    def temp22pwm(self, temperature: int):
+    def temp2pwm(self, temperature: int):
         self.FAN_CHANGE = float(self.FAN_highest - self.FAN_lowest) / float(self.TEMP_MAX - self.TEMP_MIN)
         
         if temperature >= self.TEMP_MAX:
@@ -45,11 +45,14 @@ class Fan:
 
         gc.collect()
         return(duty)
-    def duty22u16(self, duty):
+    def duty2u16(self, duty):
         return int(duty*65535/100)
     def setpwm(self, myduty):
         print("Setting pwm from temp-data:", myduty)
-        self.PWM.duty_u16(self.duty22u16(self.temp22pwm(myduty)))
+        self.PWM.duty_u16(self.duty2u16(self.temp2pwm(myduty)))
     def setpwmfrompwm(self, myduty):
         print("Setting pwm from pwm-data:", myduty)
-        self.PWM.duty_u16(self.duty22u16(myduty))
+        self.PWM.duty_u16(self.duty2u16(myduty))
+    def setpwmfromtemp(self, myduty):
+        print("Setting pwm from temp-data:", myduty)
+        self.PWM.duty_u16(self.duty2u16(self.temp2pwm(myduty)))
