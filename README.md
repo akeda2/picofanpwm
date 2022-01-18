@@ -39,10 +39,9 @@ Getting help:
 ```
 python3 tempsend.py help
 ```
-Sending temperature (adding 10000 for the first fan, 20000 for the second etc.):
+Sending temperature (adding 10000):
 ```
 python3 tempsend.py 10045
-python3 tempsend.py 20067
 ```
 Or just send pwm duty:
 ```
