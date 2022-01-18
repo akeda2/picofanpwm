@@ -54,8 +54,8 @@ python3 tempsend.py gpu
 python3 tempsend.py cpu
 python3 tempsend.py both
 ```
-The service will run both as default, which will send two values to the pico:
+The service will run "both" as default, which will send two values to the pico:
 ex: 100045 for fan1 and 200034 for fan2. Fan1 defaults to reading temperature data from the gpu through nvidia-smi, but this can of course be customized.
-The CPU-mode will use '/sys/class/thermal/thermal_zone3/temp' as default, change this i your fansettings.py.
+The CPU-mode will use '/sys/class/thermal/thermal_zone3/temp' as default, change this in your fansettings.py.
 
 This is an ongoing project which might change a lot!
