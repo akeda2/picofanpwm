@@ -1,6 +1,9 @@
 # picofanpwm
 Tools for using the pico (rd2040) as a pwm fan controller
 
+## Use-case
+I use this for controlling fans for case, gpu and cpu, letting the case fan get it's pwm data from the gpu temperature
+
 ## Includes
 ```
 tempsend.py - Python-script to run as service
@@ -36,9 +39,10 @@ Getting help:
 ```
 python3 tempsend.py help
 ```
-Sending temperature (adding 10000):
+Sending temperature (adding 10000 for the first fan, 20000 for the second etc.):
 ```
 python3 tempsend.py 10045
+python3 tempsend.py 20067
 ```
 Or just send pwm duty:
 ```
@@ -51,8 +55,7 @@ python3 tempsend.py cpu
 python3 tempsend.py both
 ```
 The service will run both as default, which will send two values to the pico:
-ex: 100045 for fan1 and 200034 for fan2.
-The CPU-mode will use '/sys/class/thermal/thermal_zone3/temp' as default.
-Change this in settings.py to what is best for your system.
+ex: 100045 for fan1 and 200034 for fan2. Fan1 defaults to reading temperature data from the gpu through nvidia-smi, but this can of course be customized.
+The CPU-mode will use '/sys/class/thermal/thermal_zone3/temp' as default, change this i your fansettings.py.
 
-All this might change a lot!
+This is an ongoing project which might change a lot!
