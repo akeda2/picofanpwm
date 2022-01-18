@@ -144,9 +144,9 @@ while True:
         except:
             print("Fail", str(data))
         data = None
-    elif data > 100 and data < 900 and changed:
+    elif data > 1000 and data < 9000 and changed:
         try:
-            fans[int(str(data)[0])].setpwmfrompwm(data - (int(str(data)[0]) * 100))
+            fans[int(str(data)[0])].setpwmfrompwm(data - (int(str(data)[0]) * 1000))
         except:
             print("Fail", str(data))
         data = None
