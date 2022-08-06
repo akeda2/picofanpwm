@@ -133,6 +133,7 @@ while True:
             
         except:
             print("Fail", str(data))
+            #raise
         data = None
         
     elif data > 9000 and changed:
@@ -144,9 +145,9 @@ while True:
         except:
             print("Fail", str(data))
         data = None
-    elif data > 1000 and data < 9000 and changed:
+    elif data > 100 and data < 900 and changed:
         try:
-            fans[int(str(data)[0])].setpwmfrompwm(data - (int(str(data)[0]) * 1000))
+            fans[int(str(data)[0])].setpwmfrompwm(data - (int(str(data)[0]) * 100))
         except:
             print("Fail", str(data))
         data = None
@@ -158,10 +159,26 @@ while True:
         for u in fans:
             u.setpwmfrompwm(data)
         data = None
+    if fanconf.casefan() > 1 and changed:
+        myCasefan = fanconf.casefan()
+        myFans = []
+        #print(len(fans))
+        try:
+            #print(fans)
+            for u in range(1,(len(fans)-1),1):
+                #print(str(u))
+                myFans.append(int(fans[u].getPWM()))
+            data = max(myFans)
+            print("Setting casefan from max(", myFans, ")")
+            fans[int(myCasefan)].setpwmfrompwm(data)
+        except:
+            print("Casefan fail")
+            pass
     if board == "tiny":
         blue.duty_u16(65535)
         red.duty_u16(65535)
     else:
         led.duty_u16(600)
     gc.collect()
+    
     

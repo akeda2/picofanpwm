@@ -16,6 +16,7 @@ Command line options:\n\n\
 \tgpu         -        Send temperature data from GPU (continuously)\n\
 \tcpu         -        Send temperature data from CPU (continuously)\n\
 \tboth        -        Send temperature data from CPU (continuously)\n\
+\tservice     -        Start service using fansettings file\n\
 \t10nnn (ex: 10066) -  Send temperature value\n\
 \tnn (ex: 66) -        Send fan PWM duty value\n')
 
@@ -30,17 +31,29 @@ PWM_FREQ = 25     # 25kHz is the default
 def getCpuTemperature():
     cpupath = fansett.getcpupath()
     #with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
-    with open(cpupath) as File:
-        res = File.readline()
-    temp = float(res) / 1000
+    try:
+        with open(cpupath) as File:
+            res = File.readline()
+        temp = float(res) / 1000
+    except:
+        temp = 50
+        print("Failed to read CPU-temp")
+        pass
     #print(str(int(res)))
     return temp
 
 
 # Get Nvidia GPU temp from 'mvidia-smi':
 def getGpuTemperature():
-    res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
-    temp = float(res)/1
+    try:
+        gpupath = fansett.getgpupath()
+        #res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
+        res = os.popen(gpupath).readline()
+        temp = float(res)/1
+    except:
+        temp = 50
+        print("Failed to read GPU-temp")
+        pass
     return temp
 
 # This is the class used for serial communication with the Pico:
@@ -124,6 +137,15 @@ if len(sys.argv) > 1:
     SOURCE = sys.argv[1]
         
 try:
+    if SOURCE == "service":
+        # Make some fans:
+        #i = 0
+        fans = []
+        for p in range(1,fansett.howmany()+1):
+            #print(str(p))
+            fans.append(fansett.getsett(p))
+            #i+=1
+        print(len(fans)+1, "fan objects including dummy '0'")
     while True:
         if SOURCE == 'help':
             printHelp()
@@ -160,7 +182,29 @@ try:
             except:
                 print("EPIC FAIL temp2")
                 pass
-            
+        elif SOURCE == "service":
+            # Make some fans:
+            #fannr = fansett.howmany()
+            for p in range(0,fansett.howmany()):
+                #print(p)#fans:
+                try:
+                    fandata = fans[p]
+                    if fandata[5] == 'gpu':
+                        #print(fandata, "GPU")
+                        mytemp = float(getGpuTemperature() + ((p+1) * 100000))
+                        sendFanData(mytemp)
+                    elif fandata[5] == 'cpu':
+                        #print(fandata, "CPU")
+                        mytemp = float(getCpuTemperature() + ((p+1) * 100000))
+                        sendFanData(mytemp)
+                    #else:
+                        #print(fandata, "ELSE")
+                    #print(mytemp)
+                except:
+                    print("FAILED HARD")
+                    raise
+                #elif fandata[5] == 'case' and casefan > 0:
+                #    pass
 #        elif (int(SOURCE)) > 9000:
 #            sendFanData(int(SOURCE))
 #            print(int(SOURCE))

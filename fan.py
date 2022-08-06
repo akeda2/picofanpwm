@@ -18,6 +18,8 @@ class Fan:
     FAN_OFF = 0
     FAN_MAX = 100
     
+    current_PWM = 0
+    
     def __init__(self, mypin: int, fandata):
         self.PWM = PWM(Pin(mypin))
         self.PWM.freq(25000)
@@ -42,8 +44,10 @@ class Fan:
             duty = self.FAN_lowest
         else:
             duty = 66
+        print("PWM:", duty, "\n")
 
         gc.collect()
+        self.current_PWM = duty
         return(duty)
     def duty2u16(self, duty):
         return int(duty*65535/100)
@@ -52,7 +56,11 @@ class Fan:
         self.PWM.duty_u16(self.duty2u16(self.temp2pwm(myduty)))
     def setpwmfrompwm(self, myduty):
         print("Setting pwm from pwm-data:", myduty)
+        self.current_PWM = myduty
         self.PWM.duty_u16(self.duty2u16(myduty))
     def setpwmfromtemp(self, myduty):
         print("Setting pwm from temp-data:", myduty)
         self.PWM.duty_u16(self.duty2u16(self.temp2pwm(myduty)))
+    
+    def getPWM(self):
+        return self.current_PWM
