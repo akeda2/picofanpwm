@@ -198,7 +198,10 @@ try:
                         mytemp = float(getCpuTemperature(fandata[6]) + ((p+1) * 100000))
                         sendFanData(mytemp)
                         time.sleep(SLEEPTIME)
-                    #else:
+                    elif fandata[5] == 'other':
+                        mytemp = float(1 + ((p+1) * 100000))
+                        sendFanData(mytemp)
+                        time.sleep(SLEEPTIME)
                         #print(fandata, "ELSE")
                     #print(mytemp)
                 except:
