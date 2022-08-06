@@ -21,37 +21,39 @@ Command line options:\n\n\
 \tnn (ex: 66) -        Send fan PWM duty value\n')
 
 fansett = FanSettings()
-# Default source, change with command line [gpu|cpu|both]
+# Default source, change with command line [gpu|cpu|both|service]
 SOURCE = "gpu"
 
 SLEEPTIME = 2
 PWM_FREQ = 25     # 25kHz is the default
 
-# Get CPU temp from sys/class/thermal:
-def getCpuTemperature():
-    cpupath = fansett.getcpupath()
+# Get CPU temp:
+def getCpuTemperature(myPath = fansett.getcpupath()):
+    #cpupath = fansett.getcpupath()
+    cpupath = myPath
     #with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
     try:
         with open(cpupath) as File:
             res = File.readline()
         temp = float(res) / 1000
     except:
-        temp = 50
+        temp = 80
         print("Failed to read CPU-temp")
         pass
     #print(str(int(res)))
     return temp
 
 
-# Get Nvidia GPU temp from 'mvidia-smi':
-def getGpuTemperature():
+# Get GPU temp:
+def getGpuTemperature(myPath = fansett.getgpupath()):
     try:
-        gpupath = fansett.getgpupath()
+        #gpupath = fansett.getgpupath()
+        gpupath = myPath
         #res = os.popen('nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader').readline()
         res = os.popen(gpupath).readline()
         temp = float(res)/1
     except:
-        temp = 50
+        temp = 80
         print("Failed to read GPU-temp")
         pass
     return temp
@@ -139,12 +141,9 @@ if len(sys.argv) > 1:
 try:
     if SOURCE == "service":
         # Make some fans:
-        #i = 0
         fans = []
         for p in range(1,fansett.howmany()+1):
-            #print(str(p))
             fans.append(fansett.getsett(p))
-            #i+=1
         print(len(fans)+1, "fan objects including dummy '0'")
     while True:
         if SOURCE == 'help':
@@ -184,19 +183,19 @@ try:
                 pass
         elif SOURCE == "service":
             # Make some fans:
-            #fannr = fansett.howmany()
             for p in range(0,fansett.howmany()):
-                #print(p)#fans:
                 try:
                     fandata = fans[p]
                     if fandata[5] == 'gpu':
-                        print(fandata, "GPU")
-                        mytemp = float(getGpuTemperature() + ((p+1) * 100000))
+                        #print(fandata, "GPU")
+                        #mytemp = float(getGpuTemperature() + ((p+1) * 100000))
+                        mytemp = float(getGpuTemperature(fandata[6]) + ((p+1) * 100000))
                         sendFanData(mytemp)
                         time.sleep(SLEEPTIME)
                     elif fandata[5] == 'cpu':
-                        print(fandata, "CPU")
-                        mytemp = float(getCpuTemperature() + ((p+1) * 100000))
+                        #print(fandata, "CPU")
+                        #mytemp = float(getCpuTemperature() + ((p+1) * 100000))
+                        mytemp = float(getCpuTemperature(fandata[6]) + ((p+1) * 100000))
                         sendFanData(mytemp)
                         time.sleep(SLEEPTIME)
                     #else:
