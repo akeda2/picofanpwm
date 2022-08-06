@@ -18,6 +18,7 @@ class Fan:
     FAN_OFF = 0
     FAN_MAX = 100
     
+    FAN_type = 'cpu'
     current_PWM = 0
     
     def __init__(self, mypin: int, fandata):
@@ -28,6 +29,7 @@ class Fan:
         self.TEMP_MAX = int(fandata[2])
         self.FAN_lowest = int(fandata[3])
         self.FAN_highest = int(fandata[4])
+        self.FAN_type = fandata[5]
         
     def temp2pwm(self, temperature: int):
         self.FAN_CHANGE = float(self.FAN_highest - self.FAN_lowest) / float(self.TEMP_MAX - self.TEMP_MIN)
@@ -64,3 +66,5 @@ class Fan:
     
     def getPWM(self):
         return self.current_PWM
+    def getType(self):
+        return self.FAN_type

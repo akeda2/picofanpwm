@@ -167,10 +167,16 @@ while True:
             #print(fans)
             for u in range(1,(len(fans)-1),1):
                 #print(str(u))
-                myFans.append(int(fans[u].getPWM()))
+                if fans[u].getType() != 'case':
+                    myFans.append(int(fans[u].getPWM()))
             data = max(myFans)
-            print("Setting casefan from max(", myFans, ")")
-            fans[int(myCasefan)].setpwmfrompwm(data)
+            #print("Setting casefan from max(", myFans, ")")
+            for p in range(1,(len(fans)),1):
+                #print(p)
+                if fans[p].getType() == 'case': 
+                    #fans[int(myCasefan)].setpwmfrompwm(data)
+                    print("Setting casefan", p, "from max(", myFans, ")")
+                    fans[p].setpwmfrompwm(data)
         except:
             print("Casefan fail")
             pass

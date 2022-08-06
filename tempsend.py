@@ -190,13 +190,15 @@ try:
                 try:
                     fandata = fans[p]
                     if fandata[5] == 'gpu':
-                        #print(fandata, "GPU")
+                        print(fandata, "GPU")
                         mytemp = float(getGpuTemperature() + ((p+1) * 100000))
                         sendFanData(mytemp)
+                        time.sleep(SLEEPTIME)
                     elif fandata[5] == 'cpu':
-                        #print(fandata, "CPU")
+                        print(fandata, "CPU")
                         mytemp = float(getCpuTemperature() + ((p+1) * 100000))
                         sendFanData(mytemp)
+                        time.sleep(SLEEPTIME)
                     #else:
                         #print(fandata, "ELSE")
                     #print(mytemp)
