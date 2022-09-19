@@ -24,7 +24,7 @@ fansett = FanSettings()
 # Default source, change with command line [gpu|cpu|both|service]
 SOURCE = "gpu"
 
-SLEEPTIME = 2
+SLEEPTIME = 1
 PWM_FREQ = 25     # 25kHz is the default
 
 # Get CPU temp:
